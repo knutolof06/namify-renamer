@@ -52,12 +52,16 @@ export const translations = {
     list_btn_invert: "Tersine Çevir",
     list_btn_remove_sel: "Seçilenleri Çıkar",
     list_btn_clear: "Tümünü Temizle",
+    list_btn_add_files: "+ Dosya",
+    list_btn_add_folder: "+ Klasör",
     list_btn_add_more: "+ Dosya Ekle",
     list_btn_proceed: "İsimleri Düzenlemeye Başla",
     list_empty: "Henüz dosya eklenmedi",
 
     rename_title: "İsim Düzenleme Stüdyosu",
     rename_toggle_layout: "Görünümü Değiştir (Bölünmüş / Yığın)",
+    rename_layout_mode_split: "Yan Yana",
+    rename_layout_mode_stack: "Alt Alta",
     rename_add_rule: "+ Kural Ekle",
     rename_export_rules: "Kuralları Dışa Aktar",
     rename_import_rules: "Kuralları İçe Aktar",
@@ -73,6 +77,11 @@ export const translations = {
     action_move: "Yeni Klasöre Taşı",
     action_copy: "Yeni Klasöre Kopyala",
     btn_apply_rename: "İşlemi Uygula",
+    btn_close: "Kapat",
+    btn_undo_selected: "Seçili Olanları Geri Al",
+    btn_confirm_ok: "Devam Et",
+    btn_confirm_proceed_anyway: "Yine de Devam Et",
+    btn_save: "Kaydet",
 
     rule_selector_title: "Eklenecek Kuralı Seçin",
     rule_type_findReplace: "Bul ve Değiştir",
@@ -179,12 +188,16 @@ export const translations = {
     list_btn_invert: "Invert Selection",
     list_btn_remove_sel: "Remove Selected",
     list_btn_clear: "Clear All",
+    list_btn_add_files: "+ Files",
+    list_btn_add_folder: "+ Folder",
     list_btn_add_more: "+ Add Files",
     list_btn_proceed: "Start Renaming Files",
     list_empty: "No files added yet",
 
     rename_title: "Rename Studio",
     rename_toggle_layout: "Toggle Layout (Split / Stack)",
+    rename_layout_mode_split: "Split",
+    rename_layout_mode_stack: "Stack",
     rename_add_rule: "+ Add Rule",
     rename_export_rules: "Export Rules",
     rename_import_rules: "Import Rules",
@@ -200,6 +213,11 @@ export const translations = {
     action_move: "Move to New Folder",
     action_copy: "Copy to New Folder",
     btn_apply_rename: "Apply Operations",
+    btn_close: "Close",
+    btn_undo_selected: "Undo Selected",
+    btn_confirm_ok: "Continue",
+    btn_confirm_proceed_anyway: "Proceed Anyway",
+    btn_save: "Save",
 
     rule_selector_title: "Select a Rule to Add",
     rule_type_findReplace: "Find & Replace",
@@ -258,7 +276,7 @@ export const translations = {
   }
 };
 
-let currentLang = localStorage.getItem('namifyLang') || 'tr';
+let currentLang = (typeof localStorage !== 'undefined' ? localStorage.getItem('namifyLang') : 'tr') || 'tr';
 
 export function getLang() {
   return currentLang;
@@ -267,7 +285,9 @@ export function getLang() {
 export function setLang(lang) {
   if (translations[lang]) {
     currentLang = lang;
-    localStorage.setItem('namifyLang', lang);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('namifyLang', lang);
+    }
     applyTranslations();
   }
 }
@@ -281,7 +301,41 @@ export function applyTranslations() {
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.getAttribute('data-i18n');
     const text = t(key);
-    if (text) el.textContent = text;
+    if (!text) return;
+
+    // Safety for buttons: never wipe icons, badges, or child elements
+    if (el.tagName === 'BUTTON') {
+      const innerSpan = el.querySelector('span:not(.kbd-badge):not(.nav-pill)');
+      if (innerSpan) {
+        innerSpan.textContent = text;
+        return;
+      }
+      if (el.children.length === 0) {
+        el.textContent = text;
+        return;
+      }
+    }
+
+    // Leaf elements: safe to replace directly
+    if (el.children.length === 0) {
+      el.textContent = text;
+      return;
+    }
+
+    // Target child span if present
+    const targetSpan = el.querySelector('span:not(.kbd-badge):not(.nav-pill)');
+    if (targetSpan && targetSpan.children.length === 0) {
+      targetSpan.textContent = text;
+      return;
+    }
+
+    // Text node fallback without blowing away children
+    for (const node of el.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0) {
+        node.nodeValue = text;
+        return;
+      }
+    }
   });
 
   document.querySelectorAll('[data-i18n-ph]').forEach((el) => {

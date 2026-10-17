@@ -1025,11 +1025,11 @@ previewSearchInput?.addEventListener('input', applyPreviewFilter);
 
 document.getElementById('action-type')?.addEventListener('change', (e) => {
   const texts = {
-    rename: 'Bulunduğu Yerde Yeniden Adlandır',
-    move: 'Yeni Klasöre Taşı',
-    copy: 'Yeni Klasöre Kopyala'
+    rename: t('btn_apply_rename', 'Bulunduğu Yerde Yeniden Adlandır'),
+    move: t('action_move', 'Yeni Klasöre Taşı'),
+    copy: t('action_copy', 'Yeni Klasöre Kopyala')
   };
-  document.getElementById('apply-rename-text').textContent = texts[e.target.value] || 'İşlemi Uygula';
+  document.getElementById('apply-rename-text').textContent = texts[e.target.value] || t('btn_apply_rename', 'İşlemi Uygula');
 });
 
 document.getElementById('apply-rename')?.addEventListener('click', async () => {
@@ -1462,12 +1462,12 @@ btnToggleLayout?.addEventListener('click', () => {
 function applyLayoutMode(mode) {
   if (mode === 'split') {
     layoutContainer.className = 'layout-split';
-    if (layoutModeLabel) layoutModeLabel.textContent = 'Yan Yana';
+    if (layoutModeLabel) layoutModeLabel.textContent = t('rename_layout_mode_split', 'Yan Yana');
     const savedWidth = localStorage.getItem('namify-split-width');
     if (savedWidth) rulesArea.style.width = savedWidth + 'px';
   } else {
     layoutContainer.className = 'layout-stack';
-    if (layoutModeLabel) layoutModeLabel.textContent = 'Alt Alta';
+    if (layoutModeLabel) layoutModeLabel.textContent = t('rename_layout_mode_stack', 'Alt Alta');
     rulesArea.style.width = 'auto';
   }
 }
