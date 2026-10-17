@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Namify — Profesyonel Dosya İsmi Düzenleyici</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <!-- Custom Windows Titlebar -->
+  <header id="titlebar">
+    <div class="titlebar-drag">
+      <div class="titlebar-brand">
+        <svg class="titlebar-logo" width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <rect width="24" height="24" rx="6" fill="url(#brandGrad)" />
+          <path d="M7 16V8l5 4-5 4z" fill="#fff" opacity="0.9" />
+          <path d="M12 16l5-4-5-4v8z" fill="#fff" opacity="0.6" />
+          <defs>
+            <linearGradient id="brandGrad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#6366f1" />
+              <stop offset="1" stop-color="#a855f7" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="titlebar-title">Namify</span>
+        <span class="titlebar-badge" id="app-version-tag">v1.2.0</span>
+      </div>
+    </div>
+
+    <div class="titlebar-center">
+      <span class="titlebar-sub" data-i18n="brand_sub">Profesyonel Dosya İsmi Düzenleyici</span>
+    </div>
+
+    <div class="titlebar-controls">
+      <button class="tb-btn" id="tb-min" title="Küçült" aria-label="Minimize">
+        <svg width="11" height="11" viewBox="0 0 12 12"><rect y="5" width="12" height="1.5" fill="currentColor"/></svg>
+      </button>
+      <button class="tb-btn" id="tb-max" title="Ekranı Kapla / Geri Yükle" aria-label="Maximize">
+        <svg id="tb-max-icon" width="11" height="11" viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+      <button class="tb-btn tb-close" id="tb-close" title="Kapat" aria-label="Close">
+        <svg width="11" height="11" viewBox="0 0 12 12"><path d="M1.5 1.5l9 9m0-9l-9 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="app">
+    <!-- Ambient Background Lighting -->
+    <div class="ambient-bg" aria-hidden="true">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Modern Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-top">
+        <div class="logo-section">
+          <div class="logo-mark">
+            <img src="/icon.png" width="30" height="30" alt="Namify Logo">
+          </div>
+          <div>
+            <h1 class="logo-text">Namify</h1>
+            <p class="logo-sub" data-i18n="brand_sub">Dosya İsmi Düzenleyici</p>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-item active" data-view="home" id="nav-home">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span data-i18n="nav_home">Dosyalar</span>
+            <span class="nav-pill" id="sidebar-file-count" style="display:none;">0</span>
+          </button>
+
+          <button class="nav-item" data-view="rename" id="nav-rename">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span data-i18n="nav_rename">İsim Düzenle</span>
+            <span class="nav-pill pill-accent" id="sidebar-rule-count" style="display:none;">0</span>
+          </button>
+
+          <button class="nav-item" data-view="history" id="nav-history">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span data-i18n="nav_history">Geçmiş</span>
+          </button>
+
+          <button class="nav-item" data-view="settings" id="nav-settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span data-i18n="nav_settings">Ayarlar</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-stats">
+          <div class="stat-card">
+            <span class="stat-num" id="stat-total">0</span>
+            <span class="stat-label" data-i18n="stat_total">Toplam Dosya</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="stat-renamed">0</span>
+            <span class="stat-label" data-i18n="stat_renamed">Düzenlenen</span>
+          </div>
+        </div>
+
+        <div class="sidebar-status-pill">
+          <span class="status-pulse-dot"></span>
+          <span id="system-status-text">Sistem Hazır</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+      <!-- ════════ VIEW 1: DROP ZONE (Empty State) ════════ -->
+      <section id="drop-zone" class="drop-zone">
+        <div class="drop-inner">
+          <div class="drop-icon-wrapper">
+            <div class="drop-icon-ring"></div>
+            <div class="drop-icon-ring ring-2"></div>
+            <svg class="drop-icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+
+          <h2 class="drop-title" data-i18n="drop_title">Dosyaları veya Klasörleri Sürükleyip Bırakın</h2>
+          <p class="drop-subtitle" data-i18n="drop_subtitle">veya bilgisayarınızdan seçmek için aşağıdaki düğmeleri kullanın</p>
+
+          <div class="drop-actions">
+            <button id="btn-browse-folder" class="btn btn-primary btn-lg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <span data-i18n="drop_browse_folder">Klasör Seç</span>
+            </button>
+          </div>
+
+          <div class="drop-badge">
+            <span class="badge-dot"></span>
+            <span data-i18n="drop_badge">Ultra Hızlı • Sınırsız Dosya Desteği</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════ VIEW 2: FILE LIST PANEL ════════ -->
+      <section id="list-panel" class="list-panel hidden">
+        <div class="list-toolbar">
+          <div class="toolbar-left">
+            <h3 class="toolbar-title" data-i18n="list_title">Dosya Listesi</h3>
+            <div class="file-count-badge"><span id="file-count">0</span> <span data-i18n="stat_total">dosya</span></div>
+            <div id="selection-count-badge" class="selection-badge hidden">
+              <span id="selected-count">0</span> <span data-i18n="stat_selected">seçili</span>
+            </div>
+          </div>
+
+          <div class="toolbar-center">
+            <div class="search-input-wrapper">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="file-search-input" class="search-input" data-i18n-ph="list_search_ph" placeholder="Dosyalarda ara (İsim, uzantı, konum)...">
+              <button id="file-search-clear" class="search-clear-btn hidden">✕</button>
+            </div>
+          </div>
+
+          <div class="toolbar-right">
+            <button id="btn-select-all" class="btn btn-sm btn-outline" data-i18n="list_btn_select_all">Tümünü Seç</button>
+            <button id="btn-invert-selection" class="btn btn-sm btn-outline" data-i18n="list_btn_invert">Tersine Çevir</button>
+            <button id="btn-remove-selected" class="btn btn-sm btn-outline btn-danger-hover" data-i18n="list_btn_remove_sel">Seçilenleri Çıkar</button>
+            <button id="clear-list" class="btn btn-sm btn-ghost-danger" data-i18n="list_btn_clear">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <span>Temizle</span>
+            </button>
+            <button id="rename-btn" class="btn btn-primary btn-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <span data-i18n="list_btn_proceed">İsimleri Düzenle →</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table Header (with resizers and drag-drop reordering) -->
+        <div id="list-header" class="list-table-header"></div>
+
+        <!-- High-Performance Virtual Scroller for Files -->
+        <div id="file-list-virtual" class="file-list virtual-scroll-container"></div>
+      </section>
+
+      <!-- ════════ VIEW 3: RENAME STUDIO PANEL ════════ -->
+      <section id="rename-panel" class="rename-panel hidden">
+        <div class="list-toolbar">
+          <div class="toolbar-left">
+            <h3 class="toolbar-title" data-i18n="rename_title">İsim Düzenleme Stüdyosu</h3>
+            <div class="file-count-badge"><span id="rename-file-count">0</span> dosya</div>
+          </div>
+
+          <div class="toolbar-right">
+            <button id="btn-toggle-layout" class="btn btn-sm btn-outline" data-i18n-title="rename_toggle_layout" title="Görünümü Değiştir">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+              <span id="layout-mode-label">Yan Yana</span>
+            </button>
+            <button id="btn-add-rule" class="btn btn-sm btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span data-i18n="rename_add_rule">+ Kural Ekle</span>
+            </button>
+            <button id="btn-export-list" class="btn btn-sm btn-outline" data-i18n="rename_export_rules">Dışa Aktar</button>
+            <button id="btn-import-list" class="btn btn-sm btn-outline" data-i18n="rename_import_rules">İçe Aktar</button>
+            <button id="back-to-list" class="btn btn-sm btn-outline" data-i18n="rename_back_to_list">← Dosya Listesi</button>
+          </div>
+        </div>
+
+        <!-- Container for Rules & Preview (Split or Stack) -->
+        <div id="rename-layout-container" class="layout-split">
+          <!-- LEFT / TOP: Dynamic Rules -->
+          <div id="rename-rules-area" class="panel-area">
+            <div class="rename-rules-header">
+              <div class="rules-header-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                <span>Aktif İsimlendirme Kuralları</span>
+              </div>
+              <span class="rules-hint">Kurallar yukarıdan aşağıya sırayla uygulanır</span>
+            </div>
+            <div class="rename-rules" id="dynamic-rules-container">
+              <!-- Rules are dynamically injected here -->
+            </div>
+          </div>
+
+          <!-- Interactive Resizer Bar -->
+          <div id="layout-resizer" class="layout-resizer"></div>
+
+          <!-- RIGHT / BOTTOM: Live Preview Section -->
+          <div id="preview-section-area" class="panel-area">
+            <div class="preview-section">
+              <div class="preview-header">
+                <div class="preview-header-left">
+                  <h4 data-i18n="preview_title">Canlı Önizleme</h4>
+                  <div class="preview-pills">
+                    <span class="preview-pill pill-changed"><span id="count-changed">0</span> <span data-i18n="preview_summary_changed">değişecek</span></span>
+                    <span class="preview-pill pill-same"><span id="count-same">0</span> <span data-i18n="preview_summary_same">aynı</span></span>
+                    <span class="preview-pill pill-error hidden" id="pill-collision-wrap"><span id="count-collision">0</span> <span data-i18n="preview_summary_collision">çakışma</span></span>
+                  </div>
+                </div>
+
+                <div class="preview-header-right">
+                  <div class="search-input-wrapper mini">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="preview-search-input" data-i18n-ph="preview_search_ph" placeholder="Önizlemede filtrele...">
+                  </div>
+                </div>
+              </div>
+
+              <!-- High-Performance Virtual Scroller for Preview -->
+              <div id="preview-virtual" class="preview-list virtual-scroll-container"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sticky Footer with Action Selector & Big CTA -->
+        <div class="rename-footer">
+          <div class="action-type-wrapper">
+            <label class="action-label">Yapılacak İşlem:</label>
+            <select id="action-type" class="field-input action-select">
+              <option value="rename">Bulunduğu Yerde Yeniden Adlandır</option>
+              <option value="move">Yeni Klasöre Taşı</option>
+              <option value="copy">Yeni Klasöre Kopyala</option>
+            </select>
+          </div>
+
+          <button id="apply-rename" class="btn btn-primary btn-lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="apply-rename-text" data-i18n="btn_apply_rename">İşlemi Uygula</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ════════ VIEW 4: HISTORY PANEL ════════ -->
+      <section id="history-panel" class="history-panel hidden">
+        <div class="list-toolbar">
+          <div class="toolbar-left">
+            <h3 class="toolbar-title" data-i18n="history_title">İşlem Geçmişi</h3>
+            <div class="file-count-badge" data-i18n="history_subtitle">Son İşlemler & Geri Alma Kayıtları</div>
+          </div>
+          <div class="toolbar-right">
+            <button id="btn-clear-history" class="btn btn-sm btn-ghost-danger" data-i18n="history_clear_btn">Geçmişi Temizle</button>
+          </div>
+        </div>
+
+        <div class="history-table-header">
+          <span style="width: 160px;" data-i18n="history_col_date">Tarih & Saat</span>
+          <span style="flex: 1;" data-i18n="history_col_summary">İşlem Detayı</span>
+          <span style="width: 80px; text-align: center;" data-i18n="history_col_count">Adet</span>
+          <span style="width: 180px; text-align: right;" data-i18n="history_col_actions">İşlem</span>
+        </div>
+
+        <div id="history-list" class="history-list"></div>
+      </section>
+
+      <!-- ════════ VIEW 5: SETTINGS PANEL ════════ -->
+      <section id="settings-panel" class="settings-panel hidden">
+        <div class="list-toolbar">
+          <div class="toolbar-left">
+            <h3 class="toolbar-title" data-i18n="settings_title">Uygulama Ayarları</h3>
+          </div>
+        </div>
+
+        <div class="settings-scroll">
+          <div class="settings-grid">
+            <!-- Theme Card -->
+            <div class="settings-card">
+              <div class="card-header">
+                <div class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
+                <div>
+                  <h4 data-i18n="settings_theme_title">Renk Teması</h4>
+                  <p class="card-desc" data-i18n="settings_theme_desc">Arayüz için göz yormayan modern renk temaları</p>
+                </div>
+              </div>
+
+              <div class="theme-grid">
+                <label class="theme-option">
+                  <input type="radio" name="appTheme" value="midnight" checked>
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #090a10, #141726); border-color: #6366f1;">
+                    <div class="theme-circle" style="background: #6366f1;"></div>
+                  </div>
+                  <span>Gece Yarısı</span>
+                </label>
+
+                <label class="theme-option">
+                  <input type="radio" name="appTheme" value="ocean">
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #050d18, #0e1e33); border-color: #38bdf8;">
+                    <div class="theme-circle" style="background: #38bdf8;"></div>
+                  </div>
+                  <span>Okyanus</span>
+                </label>
+
+                <label class="theme-option">
+                  <input type="radio" name="appTheme" value="forest">
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #06130e, #0e291f); border-color: #10b981;">
+                    <div class="theme-circle" style="background: #10b981;"></div>
+                  </div>
+                  <span>Orman</span>
+                </label>
+
+                <label class="theme-option">
+                  <input type="radio" name="appTheme" value="sunset">
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #14070a, #2b1117); border-color: #fb923c;">
+                    <div class="theme-circle" style="background: #fb923c;"></div>
+                  </div>
+                  <span>Gün Batımı</span>
+                </label>
+
+                <label class="theme-option">
+                  <input type="radio" name="appTheme" value="cyberpunk">
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #0c0317, #240a44); border-color: #d946ef;">
+                    <div class="theme-circle" style="background: #d946ef;"></div>
+                  </div>
+                  <span>Cyberpunk</span>
+                </label>
+
+                <label class="theme-option">
+                  <input type="radio" name="appTheme" value="light">
+                  <div class="theme-preview" style="background: linear-gradient(135deg, #f8fafc, #ffffff); border-color: #4f46e5;">
+                    <div class="theme-circle" style="background: #4f46e5;"></div>
+                  </div>
+                  <span>Aydınlık</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Language Card -->
+            <div class="settings-card">
+              <div class="card-header">
+                <div class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+                <div>
+                  <h4 data-i18n="settings_lang_title">Uygulama Dili</h4>
+                  <p class="card-desc" data-i18n="settings_lang_desc">Uygulamanın görüntüleneceği dili seçin</p>
+                </div>
+              </div>
+              <div style="padding-top: 14px;">
+                <select id="app-language-select" class="field-input" style="width: 100%;">
+                  <option value="tr">Türkçe (Turkish)</option>
+                  <option value="en">English (İngilizce)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Column Visibility Card -->
+            <div class="settings-card">
+              <div class="card-header">
+                <div class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg></div>
+                <div>
+                  <h4 data-i18n="settings_columns_title">Dosya Listesi Sütunları</h4>
+                  <p class="card-desc" data-i18n="settings_columns_desc">Dosya tablosunda görünmesini istediğiniz sütunları açıp kapatın</p>
+                </div>
+              </div>
+              <div id="file-list-col-toggles" class="toggles-list" style="margin-top: 14px;"></div>
+            </div>
+
+            <!-- About & Updates Card -->
+            <div class="settings-card">
+              <div class="card-header">
+                <div class="card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>
+                <div>
+                  <h4 data-i18n="settings_about_title">Hakkında & Sürüm</h4>
+                  <p class="card-desc">Namify Desktop File Renamer</p>
+                </div>
+              </div>
+              <div class="about-content" style="margin-top: 14px;">
+                <div class="about-row">
+                  <div>
+                    <strong style="color:var(--text); font-size:14px;">Namify Renamer</strong>
+                    <div id="app-version-display" style="font-size:12px; color:var(--text-muted); margin-top:2px;">Versiyon 1.2.0</div>
+                  </div>
+                  <button id="btn-check-updates" class="btn btn-primary btn-sm" data-i18n="settings_btn_updates">Güncellemeleri Kontrol Et</button>
+                </div>
+
+                <div class="about-row" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+                  <div>
+                    <span style="font-size:13px; color:var(--text-secondary);">Açık Kaynak Kod Deposu</span>
+                    <div style="font-size:11px; color:var(--text-muted);">knutolof06 / namify-renamer</div>
+                  </div>
+                  <button id="btn-github" class="btn btn-outline btn-sm" data-i18n="settings_btn_github">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                    GitHub
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ════════ MODALS & OVERLAYS ════════ -->
+
+  <!-- Scan Options Modal -->
+  <div id="options-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 data-i18n="modal_options_title">Dosya Tarama & Ekleme Seçenekleri</h3>
+        <button id="close-modal" class="modal-close-btn" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Option 1: Files -->
+        <label class="option-block">
+          <input type="radio" name="add-action" id="action-files" value="files" checked>
+          <div class="option-content">
+            <div class="option-header">
+              <div class="option-icon files-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+              </div>
+              <div>
+                <span class="option-label" data-i18n="opt_files_title">Dosyaları Filtreleyerek Ekle</span>
+                <span class="option-desc" data-i18n="opt_files_desc">Belirli uzantı veya desenlerdeki dosyaları tara</span>
+              </div>
+            </div>
+
+            <div class="option-details">
+              <label class="toggle-row">
+                <span data-i18n="opt_subfolders">Alt klasörleri dahil et (Derin tarama)</span>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="include-subfolders">
+                  <span class="toggle-slider"></span>
+                </div>
+              </label>
+
+              <div class="field-group">
+                <label class="field-label" data-i18n="opt_mask_label">Dosya adı maskesi</label>
+                <input type="text" id="file-mask" class="field-input" data-i18n-ph="opt_mask_ph" placeholder="Örn: *.jpg, *.png, *.mp4">
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" data-i18n="opt_regex_label">Düzenli ifade (Regex) filtresi</label>
+                <input type="text" id="regex-match" class="field-input" data-i18n-ph="opt_regex_ph" placeholder="Örn: ^IMG_[0-9]+">
+              </div>
+            </div>
+          </div>
+        </label>
+
+        <!-- Option 2: Folders -->
+        <label class="option-block">
+          <input type="radio" name="add-action" id="action-folders" value="folders">
+          <div class="option-content">
+            <div class="option-header">
+              <div class="option-icon folders-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div>
+                <span class="option-label" data-i18n="opt_folders_title">Klasörleri Ekle</span>
+                <span class="option-desc" data-i18n="opt_folders_desc">Klasörlerin kendilerini yeniden adlandırmak için ekle</span>
+              </div>
+            </div>
+
+            <div class="option-details">
+              <label class="toggle-row">
+                <span data-i18n="opt_add_subfolders">Alt klasörleri ekle</span>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="add-subfolders">
+                  <span class="toggle-slider"></span>
+                </div>
+              </label>
+              <label class="toggle-row">
+                <span data-i18n="opt_add_root">Kök klasörü ekle</span>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="add-root">
+                  <span class="toggle-slider"></span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <div class="modal-footer">
+        <button id="cancel-modal" class="btn btn-ghost" data-i18n="btn_cancel">İptal</button>
+        <button id="process-btn" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span data-i18n="btn_add_to_list">Listeye Aktar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rule Selector Modal -->
+  <div id="rule-selector-modal" class="modal-overlay hidden">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 data-i18n="rule_selector_title">Eklenecek Kuralı Seçin</h3>
+        <button class="modal-close-btn btn-close-rule-selector">✕</button>
+      </div>
+      <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+        <div class="rule-picker-grid" id="rule-picker-list">
+          <!-- Injected dynamically with rich icons and descriptions -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Partial History Undo Modal -->
+  <div id="history-preview-modal" class="modal-overlay hidden">
+    <div class="modal modal-xl">
+      <div class="modal-header">
+        <h3>İşlem Önizlemesi & Kısmi Geri Alma</h3>
+        <button class="modal-close-btn btn-close-history-preview">✕</button>
+      </div>
+      <div class="modal-body" style="flex:1; min-height:0; display:flex; flex-direction:column;">
+        <div class="history-preview-table-wrap">
+          <table id="history-preview-table" class="data-table">
+            <thead id="history-preview-thead"></thead>
+            <tbody id="history-preview-list"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:space-between; align-items:center;">
+        <div class="selected-files-count">
+          <span id="history-preview-sel-count">0</span> dosya seçili
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-outline btn-close-history-preview">Kapat</button>
+          <button id="btn-undo-selected" class="btn btn-danger">Seçili Olanları Geri Al</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Confirmation Dialog -->
+  <div id="custom-confirm-modal" class="modal-overlay hidden">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 id="custom-confirm-title">İşlem Onayı</h3>
+        <button class="modal-close-btn btn-close-confirm">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="custom-confirm-message">Bu işlemi gerçekleştirmek istediğinize emin misiniz?</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline btn-close-confirm">İptal</button>
+        <button class="btn btn-primary" id="custom-confirm-ok">Devam Et</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Prompt Dialog -->
+  <div id="custom-prompt" class="modal-overlay hidden">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 id="custom-prompt-title">Girdi Gerekli</h3>
+        <button class="modal-close-btn btn-close-prompt">✕</button>
+      </div>
+      <div class="modal-body">
+        <label class="field-label" id="custom-prompt-msg">Değer giriniz:</label>
+        <input type="text" id="custom-prompt-input" class="field-input" style="margin-top:8px;">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline btn-close-prompt">İptal</button>
+        <button class="btn btn-primary" id="custom-prompt-ok">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Batch Progress Modal -->
+  <div id="progress-modal" class="modal-overlay hidden">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 data-i18n="progress_title">İşlem Yapılıyor...</h3>
+      </div>
+      <div class="modal-body" style="gap:16px;">
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="batch-progress-fill" style="width: 0%;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-secondary);">
+          <span id="batch-progress-status" data-i18n="progress_processing">Dosyalar işleniyor...</span>
+          <span id="batch-progress-percent" style="font-weight:600; font-family:monospace;">0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite">
+    <div class="toast-icon"></div>
+    <span class="toast-msg"></span>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

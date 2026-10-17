@@ -1,0 +1,79 @@
+{
+  "name": "namify-renamer",
+  "version": "1.2.0",
+  "description": "Premium File Renamer",
+  "author": "Antigravity",
+  "private": true,
+  "type": "module",
+  "main": "electron-main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron:dev": "cross-env NODE_ENV=development electron .",
+    "electron:build": "vite build && electron-forge make",
+    "build:app": "vite build && electron-builder --win"
+  },
+  "build": {
+    "appId": "com.antigravity.namify",
+    "productName": "Namify Renamer",
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "icon": "icon.ico",
+      "artifactName": "Namify-Renamer-${version}.${ext}",
+      "target": [
+        "nsis",
+        "portable",
+        "appx"
+      ]
+    },
+    "appx": {
+      "applicationId": "NamifyRenamer",
+      "identityName": "burhanbagci.NamifyRenamer",
+      "publisher": "CN=D8B44F27-6FE1-4B2D-8F90-5F9BEE356A9A",
+      "publisherDisplayName": "burhanbagci",
+      "backgroundColor": "#0a0a0f",
+      "languages": [
+        "tr-TR"
+      ]
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "knutolof06",
+        "repo": "namify-renamer"
+      }
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "installerHeaderIcon": "icon.ico",
+      "artifactName": "Namify-Renamer-Setup-${version}.${ext}"
+    },
+    "files": [
+      "dist/**/*",
+      "electron-main.cjs",
+      "preload.cjs"
+    ]
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.11.1",
+    "@electron-forge/maker-deb": "^7.11.1",
+    "@electron-forge/maker-rpm": "^7.11.1",
+    "@electron-forge/maker-squirrel": "^7.11.1",
+    "@electron-forge/maker-zip": "^7.11.1",
+    "cross-env": "^10.1.0",
+    "electron": "^41.2.2",
+    "electron-builder": "^26.8.1",
+    "jimp": "^0.16.13",
+    "png-to-ico": "^3.0.1",
+    "vite": "^8.0.9"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
+  }
+}

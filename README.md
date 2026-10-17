@@ -1,9 +1,8 @@
-[README.md](https://github.com/user-attachments/files/26990258/README.md)
 # 🚀 Namify Renamer
 
 **Namify Renamer**, dosyalarınızı profesyonel, hızlı ve tamamen özelleştirilebilir bir şekilde yeniden adlandırmanız için tasarlanmış modern bir masaüstü uygulamasıdır. Karmaşık dosya yığınlarını düzenlemek artık saniyeler sürüyor! ✨
 
-![Namify Logo](/icon2.png)
+![Namify Logo](/icon.png)
 
 ---
 
