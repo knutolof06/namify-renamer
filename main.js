@@ -458,7 +458,29 @@ document.addEventListener('drop', (e) => {
   }
 });
 
-document.getElementById('btn-browse-folder')?.addEventListener('click', async () => {
+async function handleBrowseFiles() {
+  if (window.electronAPI && window.electronAPI.selectFiles) {
+    const files = await window.electronAPI.selectFiles();
+    if (files && files.length > 0) {
+      rawEntries = files;
+      showOptionsModal();
+    }
+  } else {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    input.onchange = (e) => {
+      const fls = Array.from(e.target.files);
+      if (fls.length > 0) {
+        rawEntries = fls.map(f => f.path || f.name);
+        showOptionsModal();
+      }
+    };
+    input.click();
+  }
+}
+
+async function handleBrowseFolder() {
   if (window.electronAPI) {
     const dir = await window.electronAPI.selectDirectory();
     if (dir) {
@@ -468,17 +490,16 @@ document.getElementById('btn-browse-folder')?.addEventListener('click', async ()
   } else {
     toast('Bu özellik masaüstü uygulamasında çalışır.', 'error');
   }
-});
+}
+
+document.getElementById('btn-browse-folder')?.addEventListener('click', handleBrowseFolder);
+document.getElementById('btn-browse-files')?.addEventListener('click', handleBrowseFiles);
+document.getElementById('btn-add-folder-toolbar')?.addEventListener('click', handleBrowseFolder);
+document.getElementById('btn-add-files-toolbar')?.addEventListener('click', handleBrowseFiles);
 
 dropZone.addEventListener('click', async (e) => {
   if (e.target.closest('button')) return;
-  if (window.electronAPI) {
-    const dir = await window.electronAPI.selectDirectory();
-    if (dir) {
-      rawEntries = [dir];
-      showOptionsModal();
-    }
-  }
+  handleBrowseFolder();
 });
 
 // ── Scan Options Modal ──
@@ -1199,6 +1220,20 @@ async function loadHistoryUI() {
     });
   });
 }
+
+document.getElementById('btn-clear-history')?.addEventListener('click', async () => {
+  const confirmed = await showCustomConfirm(
+    'Geçmişi Temizle',
+    'Tüm işlem geçmişi ve geri alma kayıtları silinecek. Bu işlem geri alınamaz. Devam edilsin mi?'
+  );
+  if (confirmed) {
+    if (window.electronAPI && window.electronAPI.clearHistory) {
+      await window.electronAPI.clearHistory();
+    }
+    loadHistoryUI();
+    toast('İşlem geçmişi temizlendi.', 'info');
+  }
+});
 
 async function openPartialHistoryModal(batch) {
   const modal = document.getElementById('history-preview-modal');

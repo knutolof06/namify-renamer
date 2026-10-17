@@ -2,10 +2,12 @@ const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   selectDirectory: () => ipcRenderer.invoke('select-directory'),
+  selectFiles: () => ipcRenderer.invoke('select-files'),
   renameFiles: (data) => ipcRenderer.invoke('rename-files', data),
   scanPaths: (data) => ipcRenderer.invoke('scan-paths', data),
   getFilePath: (file) => (webUtils && webUtils.getPathForFile ? webUtils.getPathForFile(file) : file.path),
   getHistory: () => ipcRenderer.invoke('get-history'),
+  clearHistory: () => ipcRenderer.invoke('clear-history'),
   undoBatch: (batchId, pathsToUndo) => ipcRenderer.invoke('undo-batch', batchId, pathsToUndo),
   minimize: () => ipcRenderer.invoke('window-minimize'),
   maximize: () => ipcRenderer.invoke('window-maximize'),

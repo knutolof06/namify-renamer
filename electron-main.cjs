@@ -188,6 +188,14 @@ ipcMain.handle('select-directory', async () => {
   return result.filePaths[0];
 });
 
+// ── File Picker ──
+ipcMain.handle('select-files', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile', 'multiSelections']
+  });
+  return result.filePaths || [];
+});
+
 // ── High-Performance Async Scan Paths ──
 ipcMain.handle('scan-paths', async (_event, { paths, options }) => {
   const processedFiles = [];
@@ -345,6 +353,12 @@ ipcMain.handle('rename-files', async (_event, { folder, files, actionType = 'ren
 
 // ── Get History ──
 ipcMain.handle('get-history', async () => loadHistory());
+
+// ── Clear History ──
+ipcMain.handle('clear-history', async () => {
+  saveHistory([]);
+  return { success: true };
+});
 
 // ── Undo Batch ──
 ipcMain.handle('undo-batch', async (_event, batchId, pathsToUndo = null) => {
